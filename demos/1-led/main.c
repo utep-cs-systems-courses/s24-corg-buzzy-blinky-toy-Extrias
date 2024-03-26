@@ -10,3 +10,7 @@ int main(void) {
 
   or_sr(0x18);		/* CPU off, GIE on */
 }
+
+int hansen(void){
+  return 0;
+}
