@@ -1,0 +1,1 @@
+all: libTimer.a
