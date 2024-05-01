@@ -5,7 +5,7 @@
 int main(void){
   P1DIR |= LEDS;
   P1OUT &= ~LED_GREEN;
-  P1OUT |= LED_GREEN;
+  P1OUT |= LED_RED;
 
   configureClocks();
   enableWDTInterrupts();
@@ -14,7 +14,7 @@ int main(void){
 }
 
 void
-_interrupt_vec(WDT_VECTOR) WDT()        //250 interrupts/sec
+__interrupt_vec(WDT_VECTOR) WDT()        //250 interrupts/sec
 {
   P1OUT |= LED_GREEN;
 

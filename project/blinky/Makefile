@@ -15,7 +15,7 @@ all: led.elf
 
 
 #additional rules for files
-lef.elf: ${COMMON_OBJECTS}
+led.elf: ${COMMON_OBJECTS}
 	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^ ../lib/libTimer.a
 
 
