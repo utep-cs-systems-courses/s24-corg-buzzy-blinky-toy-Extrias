@@ -9,6 +9,7 @@ int main(void){
 
   configureClocks();
   enableWDTInterrupts();
+  buzzer_init();
 
   or_sr(0x18);
 }
@@ -16,6 +17,7 @@ int main(void){
 void
 __interrupt_vec(WDT_VECTOR) WDT()        //250 interrupts/sec
 {
+  static int state;
   P1OUT |= LED_GREEN;
 
 }

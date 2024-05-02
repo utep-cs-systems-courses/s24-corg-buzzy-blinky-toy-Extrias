@@ -9,6 +9,8 @@
 #define SW2 BIT1
 #define SWITCHES (SW1 | SW2)		/* only 1 switch on this board */
 
+volatile char led_state = 0;  //initial led state, both leds off
+
 void main(void) 
 {  
   configureClocks();
@@ -35,24 +37,15 @@ switch_interrupt_handler()
 
 /* up=red, down=green */
   if (p1val & SW1) {
-    P1OUT |= LED_RED;
-    P1OUT &= ~LED_GREEN;
-  }
-else {
     P1OUT |= LED_GREEN;
     P1OUT &= ~LED_RED;
- }
-
-  if (p1val & SW2) {
-    P1OUT |= LED_RED;
-    P1OUT &= ~LED_GREEN;
   }
-else {
-    P1OUT |= LED_GREEN;
-    P1OUT &= ~LED_RED;
- }
+  else{
+    P1OUT &= ~LED_GREEN;
+    P1OUT |= LED_RED;
+  }
   
- 
+  
 }
 
 
