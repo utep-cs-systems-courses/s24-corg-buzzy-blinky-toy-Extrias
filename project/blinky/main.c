@@ -9,7 +9,7 @@ int main(void){
 
   configureClocks();
   enableWDTInterrupts();
-  buzzer_init();
+  // buzzer_init();
 
   or_sr(0x18);
 }
@@ -17,7 +17,25 @@ int main(void){
 void
 __interrupt_vec(WDT_VECTOR) WDT()        //250 interrupts/sec
 {
-  static int state;
-  P1OUT |= LED_GREEN;
+  static int state = 0;
+  static int on = 1;
+  
+
+  switch(on){
+  case 0:
+    P1OUT &= ~LED_GREEN;
+    break;
+  
+  case 1:
+    P1OUT |= LED_GREEN;
+    break;
+  }
+  
+
+  if(state == 250){
+    state = 0;
+    on = ~on;
+  }
+  state += 1;
 
 }
