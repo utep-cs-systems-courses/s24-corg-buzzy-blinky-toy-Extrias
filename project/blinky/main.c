@@ -74,7 +74,7 @@ void blinking_green_light(){
 
 }
 
-void crazy_light(){
+/*void crazy_light(){
   static int state = 0;
   static int on = 1;
 
@@ -100,7 +100,74 @@ void crazy_light(){
     state = 0;
     on = !on;
   }
-}
+}*/
+crazy_light:
+    ; Load the address of the variable 'state' into a register
+    mov.w &state, r12
+
+    ; Load the value of 'state' into a register
+    mov.w @r12, r13
+
+    ; Load the address of the variable 'on' into a register
+    mov.w &on, r14
+
+    ; Load the value of 'on' into a register
+    mov.w @r14, r15
+
+    ; Compare 'on' with 0
+    cmp #0, r15
+
+    ; If 'on' is equal to 0, jump to on_is_zero label
+    jeq on_is_zero
+
+    ; If 'on' is not equal to 0, execute the following instructions
+
+    ; Set LED_RED (P1OUT |= LED_RED)
+    bis #LED_RED, &P1OUT
+
+    ; Clear LED_GREEN (P1OUT &= ~LED_GREEN)
+    bic #LED_GREEN, &P1OUT
+
+    ; Jump to end_of_switch_case
+    jmp end_of_switch_case
+
+on_is_zero:
+    ; If 'on' is equal to 0, execute the following instructions
+
+    ; Clear LED_RED (P1OUT &= ~LED_RED)
+    bic #LED_RED, &P1OUT
+
+    ; Set LED_GREEN (P1OUT |= LED_GREEN)
+    bis #LED_GREEN, &P1OUT
+
+end_of_switch_case:
+    ; Increment 'state' by 1
+    inc @r12
+
+    ; Compare 'state' with 30
+    cmp #30, r13
+
+    ; If 'state' is greater than or equal to 30, jump to end_of_state_check
+
+    ; If 'state' is less than 30, execute the following instructions
+
+    ; Store the updated value of 'state' back into memory
+    mov.w r13, @r12
+
+    ; Jump to end_of_function
+    jmp end_of_function
+
+end_of_state_check:
+    ; If 'state' is greater than or equal to 30, execute the following instructions
+
+    ; Reset 'state' to 0
+    clr @r12
+
+    ; Toggle the value of 'on' (on = !on)
+    bit #1, &on
+
+end_of_function:
+    ret
 
 void glowy(){
   static int timer = 0;
