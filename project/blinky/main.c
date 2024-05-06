@@ -4,6 +4,12 @@
 #include <stdio.h>
 #include "buzzer.h"
 
+#define SW1 BIT0
+#define SW2 BIT1
+#define SW3 BIT2
+#define SW4 BIT3
+#define SWITCHES (SW1 | SW2 | SW3 | SW4)
+
 void delay_ms(unsigned int ms);
 void tetris_melody();
 
@@ -14,8 +20,14 @@ int main(void){
 
   configureClocks();
   enableWDTInterrupts();
+  
+  P2REN |= SWITCHES;
+  P2IE |= SWITCHES;
+  P2OUT |= SWITCHES;
+  P2DIR &= ~SWITCHES;
+
+  
   buzzer_init();
-  tetris_melody();
 
   or_sr(0x18);
 }
@@ -86,5 +98,46 @@ void delay_ms(unsigned int ms){
   for(i = 0; i < ms; i++){
     __delay_cycles(2000);
   }
+}
+
+void switch_interrupt_handler(){
+  static int music_on = 0;
+  
+  char p2val = P2IN;      /* switch is in P2 */
+
+  //update switch interrupt sense to detenct changes from current buttons
+  P2IES |= (p2val & SWITCHES);  //if switch up, sense down
+  P2IES &= (p2val | ~SWITCHES); //if switch down, sense up
+
+  /* up=red, down=green */
+
+  if(p2val & SW1){
+    P1OUT |= LED_GREEN;
+    P1OUT &= ~LED_GREEN;
+    int button1 = 1;
+  }
+  else{
+    P1OUT &= ~LED_GREEN;
+    P1OUT |= LED_GREEN;
+  }
+
+  if(p2val & SW2){
+    if(music_on){
+      buzzer_stop();
+      music_on = !music_on;
+    }
+    else{
+      tetris_melody();
+      music_on = !music_on;
+    }
+  }
+  }
+
+void __interrupt_vec(PORT2_VECTOR) Port_2(){
+    if(P2IFG & SWITCHES){
+      P2IFG &= ~SWITCHES;
+      switch_interrupt_handler();
+    }
+  
 }
 
