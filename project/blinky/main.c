@@ -4,6 +4,9 @@
 #include <stdio.h>
 #include "buzzer.h"
 
+void delay_ms(unsigned int ms);
+void tetris_melody();
+
 int main(void){
   P1DIR |= LEDS;
   P1OUT &= ~LED_GREEN;
@@ -12,7 +15,7 @@ int main(void){
   configureClocks();
   enableWDTInterrupts();
   buzzer_init();
-  buzzer_set_period(1000);
+  tetris_melody();
 
   or_sr(0x18);
 }
