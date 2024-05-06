@@ -4,8 +4,7 @@
 #include <stdio.h>
 #include "buzzer.h"
 
-#define SW0 BIT3
-#define SWITCH SW0
+
 #define SW1 BIT0
 #define SW2 BIT1
 #define SW3 BIT2
@@ -15,6 +14,9 @@
 void delay_ms(unsigned int ms);
 void tetris_melody();
 
+static int color = 1;        //for first button to switch the light thats blinking
+static int button3 = 0;      //changes to 1 when button3(SW3) is pressed
+
 int main(void){
   P1DIR |= LEDS;
   P1OUT &= ~LED_GREEN;
@@ -22,9 +24,6 @@ int main(void){
 
   configureClocks();
   enableWDTInterrupts();
-
-  P1REN |= SWITCH;
-  P1IE &= ~SWITCH;
   
   P2REN |= SWITCHES;
   P2IE |= SWITCHES;
@@ -41,11 +40,27 @@ void blinking_green_light(){
 
   switch(on){
   case 0:
-    P1OUT &= ~LED_GREEN;
+    switch(color){
+    case 0:
+      P1OUT &= ~LED_RED;
+      break;
+    case 1:
+      P1OUT &= ~LED_GREEN;
+      break;
+    }
+    
     break;
 
   case 1:
-    P1OUT |= LED_GREEN;
+    switch(color){
+    case 0:
+      P1OUT |= LED_RED;
+      break;
+    case 1:
+      P1OUT |= LED_GREEN;
+      break;
+    }
+    
     break;
   }
 
@@ -58,11 +73,43 @@ void blinking_green_light(){
 
 }
 
+void crazy_light(){
+  static int state = 0;
+  static int on = 1;
+
+  switch(on){
+  case 0:
+    
+      P1OUT &= ~LED_RED;
+      P1OUT |= LED_GREEN;
+    
+    break;
+
+  case 1:
+    
+      P1OUT |= LED_RED;
+      P1OUT &= ~LED_GREEN;
+    
+    break;
+  }
+
+  state++;
+
+  if(state >= 30){
+    state = 0;
+    on = !on;
+  }
+}
+
 void
 __interrupt_vec(WDT_VECTOR) WDT()        //250 interrupts/sec
 {
- 
+  if(!button3){
   blinking_green_light();
+  }
+  else{
+    crazy_light();
+  }
 
 
 }
@@ -116,13 +163,15 @@ void switch_interrupt_handler(){
   
 
   switch (button){
-  case 1:                  //activates when s2
+  case 1:
+    color = !color;
     break;
   case 2:                  //activates when s1
     tetris_melody();
     buzzer_set_period(0);
     break;
   case 3:
+    button3 = !button3;
     break;
   case 4:
     tetris_melody();
@@ -132,23 +181,6 @@ void switch_interrupt_handler(){
     break;
   }
   
-
-  /* up=red, down=green */
-
-  /* if(p2val & SW1){ */
-  /*   P1OUT |= LED_GREEN; */
-  /*   P1OUT &= ~LED_GREEN; */
-    
-  /* } */
-  /* else{ */
-  /*   P1OUT &= ~LED_GREEN; */
-  /*   P1OUT |= LED_GREEN; */
-  /* } */
-
-  /* if(p2val & SW2){ */
-  /*   tetris_melody(); */
-  /*   buzzer_stop(); */
-  /* } */
   }
 
 void __interrupt_vec(PORT2_VECTOR) Port_2(){
@@ -159,10 +191,4 @@ void __interrupt_vec(PORT2_VECTOR) Port_2(){
  
 }
 
-void __interrupt_vec(PORT1_VECTOR) Port_1(){
-    if(P1IFG & SWITCH){
-      P1IFG &= ~SWITCH;
-      switch_interrupt_handler();
-    }
-} 
 
