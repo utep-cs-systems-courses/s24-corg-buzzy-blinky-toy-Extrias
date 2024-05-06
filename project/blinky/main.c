@@ -16,6 +16,7 @@ void tetris_melody();
 
 static int color = 1;        //for first button to switch the light thats blinking
 static int button3 = 0;      //changes to 1 when button3(SW3) is pressed
+static int button4 = 0;      //changes to 1 when buttin4 (SW4) is pressed
 
 int main(void){
   P1DIR |= LEDS;
@@ -101,14 +102,97 @@ void crazy_light(){
   }
 }
 
+void glowy(){
+  static int timer = 0;
+  static int state = 0;
+  int timer2 = 0;
+  if(state/(41*(1+timer)) == 1){
+    int timer2 = state/(41);
+    if(state % 41 == 0){
+      timer++;
+    }
+  }
+  
+  
+  switch(timer2){
+  case 1:
+    if(state % 1 == 0){
+  P1OUT |= LED_GREEN;
+  }
+  else{
+    P1OUT &= ~LED_GREEN;
+  }
+    break;
+
+  case 2:
+    if(state % 2 == 0){
+  P1OUT |= LED_GREEN;
+  }
+  else{
+    P1OUT &= ~LED_GREEN;
+  }
+    break;
+
+  case 3:
+    if(state % 3 == 0){
+  P1OUT |= LED_GREEN;
+  }
+  else{
+    P1OUT &= ~LED_GREEN;
+  }
+    break;
+  case 4:
+    if(state % 4 == 0){
+  P1OUT |= LED_GREEN;
+  }
+  else{
+    P1OUT &= ~LED_GREEN;
+  }
+    break;
+
+  case 5:
+    if(state % 5 == 0){
+  P1OUT |= LED_GREEN;
+  }
+  else{
+    P1OUT &= ~LED_GREEN;
+  }
+    break;
+
+  case 6:
+    if(state % 6 == 0){
+  P1OUT |= LED_GREEN;
+  }
+  else{
+    P1OUT &= ~LED_GREEN;
+  }
+    break;
+  default:
+    P1OUT |= LED_GREEN;
+    break;
+    
+  }
+  
+ 
+  
+  state++;
+  if(state == 250){
+    state = 0;
+    timer = 0;
+  }
+}
+
 void
 __interrupt_vec(WDT_VECTOR) WDT()        //250 interrupts/sec
 {
-  if(!button3){
+  if(!button3 & !button4){
   blinking_green_light();
   }
-  else{
+  else if(button3){
     crazy_light();
+  }
+  else if(button4){
+    glowy();
   }
 
 
@@ -174,8 +258,7 @@ void switch_interrupt_handler(){
     button3 = !button3;
     break;
   case 4:
-    tetris_melody();
-    buzzer_set_period(0);
+    button4 = !button4;
     break;
   default:
     break;
