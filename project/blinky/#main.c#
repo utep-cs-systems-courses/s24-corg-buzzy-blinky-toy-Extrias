@@ -41,7 +41,7 @@ void blinking_green_light(){
 void
 __interrupt_vec(WDT_VECTOR) WDT()        //250 interrupts/sec
 {
- 
+  
   blinking_green_light();
 
 
