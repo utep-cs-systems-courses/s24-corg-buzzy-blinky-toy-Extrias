@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include "buzzer.h"
 
+#define SW0 BIT3
+#define SWITCH SW0
 #define SW1 BIT0
 #define SW2 BIT1
 #define SW3 BIT2
@@ -20,6 +22,9 @@ int main(void){
 
   configureClocks();
   enableWDTInterrupts();
+
+  P1REN |= SWITCH;
+  P1IE &= ~SWITCH;
   
   P2REN |= SWITCHES;
   P2IE |= SWITCHES;
@@ -104,27 +109,24 @@ void switch_interrupt_handler(){
   char p2val = P2IN;      /* switch is in P2 */
   int button = 0;            //to see what button was pressedd
   
-  if((p2val & SW1) != 0){ button = 1; }
-  else{
-    if((p2val & SW2) != 0){ button = 2; }
-    else{
-      if((p2val & SW3) != 0){ button = 3; }
-      else{
-	if((p2val & SW4) != 0){ button = 4; }
-      }
-    }
-  }
+  if(p2val & SW1 ? 0 : 1){ button = 1;}
+  if(p2val & SW2 ? 0 : 1){ button = 2;}
+  if(p2val & SW3 ? 0 : 1){ button = 3;}
+  if(p2val & SW4 ? 0 : 1){ button = 4;}
+  
 
   switch (button){
-  case 1:
+  case 1:                  //activates when s2
     break;
-  case 2:
+  case 2:                  //activates when s1
     tetris_melody();
     buzzer_set_period(0);
     break;
   case 3:
     break;
   case 4:
+    tetris_melody();
+    buzzer_set_period(0);
     break;
   default:
     break;
@@ -154,6 +156,13 @@ void __interrupt_vec(PORT2_VECTOR) Port_2(){
       P2IFG &= ~SWITCHES;
       switch_interrupt_handler();
     }
-  
+ 
 }
+
+void __interrupt_vec(PORT1_VECTOR) Port_1(){
+    if(P1IFG & SWITCH){
+      P1IFG &= ~SWITCH;
+      switch_interrupt_handler();
+    }
+} 
 

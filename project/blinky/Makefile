@@ -15,7 +15,7 @@ all: led.elf
 
 
 #additional rules for files
-led.elf: ${COMMON_OBJECTS}
+led.elf: ${COMMON_OBJECTS} led.h
 	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^ ../lib/libTimer.a
 
 
@@ -28,6 +28,6 @@ clean:
 	rm -f *.o *.elf
 
 
-main.o: led.h
+main.o: led.h buzzer.h
 
 buzzer.o: buzzer.c buzzer.h
