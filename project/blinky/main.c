@@ -2,6 +2,7 @@
 #include "libTimer.h"
 #include "led.h"
 #include <stdio.h>
+#include "buzzer.h"
 
 int main(void){
   P1DIR |= LEDS;
@@ -10,7 +11,8 @@ int main(void){
 
   configureClocks();
   enableWDTInterrupts();
-  // buzzer_init();
+  buzzer_init();
+  buzzer_set_period(1000);
 
   or_sr(0x18);
 }

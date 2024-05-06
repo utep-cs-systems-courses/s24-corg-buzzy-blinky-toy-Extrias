@@ -2,6 +2,8 @@
 #include "libTimer.h"
 #include "buzzer.h"
 
+volatile unsigned int buzzer_duration = 0;
+
 void buzzer_init()
 {
     /* 
@@ -22,4 +24,11 @@ void buzzer_set_period(short cycles) /* buzzer clock = 2MHz.  (period of 1k resu
 {
   CCR0 = cycles; 
   CCR1 = cycles >> 1;		/* one half cycle */
+}
+
+void buzzer_stop()
+{
+  buzzer_set_period(0);
+  buzzer_duration = 0;
+  
 }

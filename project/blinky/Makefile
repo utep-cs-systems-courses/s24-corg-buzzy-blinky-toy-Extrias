@@ -1,6 +1,6 @@
 
 
-COMMON_OBJECTS = main.o
+COMMON_OBJECTS = main.o buzzer.o
 CPU	       = msp430g2553
 CFLAGS	       = -mmcu=${CPU} -I../h
 LDFLAGS	       = -L/opt/ti/msp430_gcc/include
@@ -19,6 +19,7 @@ led.elf: ${COMMON_OBJECTS}
 	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^ ../lib/libTimer.a
 
 
+
 load: led.elf
 	msp430loader.sh led.elf
 
@@ -29,5 +30,4 @@ clean:
 
 main.o: led.h
 
-
-wdInterruptHandler.o: led.h
+buzzer.o: buzzer.c buzzer.h
